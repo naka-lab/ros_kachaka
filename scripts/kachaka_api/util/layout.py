@@ -17,21 +17,21 @@ from ..generated import kachaka_api_pb2 as pb2
 
 class ShelfLocationResolver:
     def __init__(
-        self, shelves: list[pb2.Shelf] = [], locations: list[pb2.Location] = []
+        self, shelves = [], locations = []
     ) -> None:
         self.shelves = shelves
         self.locations = locations
 
-    def set_shelves(self, shelves: list[pb2.Shelf]) -> None:
+    def set_shelves(self, shelves) -> None:
         self.shelves = shelves
 
-    def set_locations(self, locations: list[pb2.Location]) -> None:
+    def set_locations(self, locations) -> None:
         self.locations = locations
 
-    def get_shelf_list(self) -> list[Tuple[str, str]]:
+    def get_shelf_list(self):
         return [(shelf.id, shelf.name) for shelf in self.shelves]
 
-    def get_location_list(self) -> list[Tuple[str, str]]:
+    def get_location_list(self):
         return [(location.id, location.name) for location in self.locations]
 
     def get_shelf_name_by_id(self, shelf_id: str) -> str:

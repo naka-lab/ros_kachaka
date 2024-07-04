@@ -44,14 +44,14 @@ class ErrorCode(NamedTuple):
     ref_url: str
 
 
-def _resolve_hostname(domain: str) -> str | None:
+def _resolve_hostname(domain: str):
     try:
         return socket.gethostbyname(domain)
     except socket.gaierror:
         return None
 
 
-def _resolve_target(target: str) -> str | None:
+def _resolve_target(target: str):
     try:
         hostname, port = target.split(":")
     except ValueError:
@@ -96,14 +96,14 @@ class KachakaApiClientBase:
         response: pb2.GetPngMapResponse = self.stub.GetPngMap(request)
         return response.map
 
-    def get_battery_info(self) -> tuple[float, pb2.PowerSupplyStatus]:
+    def get_battery_info(self):
         request = pb2.GetRequest()
         response: pb2.GetBatteryInfoResponse = self.stub.GetBatteryInfo(request)
         return (response.battery_percentage, response.power_supply_status)
 
     def get_object_detection(
         self,
-    ) -> tuple[pb2.RosHeader, RepeatedCompositeContainer]:
+    ):
         request = pb2.GetRequest()
         response: pb2.GetObjectDetectionResponse = self.stub.GetObjectDetection(
             request
@@ -112,7 +112,7 @@ class KachakaApiClientBase:
 
     def get_object_detection_features(
         self,
-    ) -> tuple[pb2.RosHeader, RepeatedCompositeContainer]:
+    ):
         request = pb2.GetRequest()
         response: pb2.GetObjectDetectionFeaturesResponse = (
             self.stub.GetObjectDetectionFeatures(request)
@@ -209,12 +209,12 @@ class KachakaApiClientBase:
             raise Exception("tof is not available on charger.")
         return response.image
 
-    def get_error(self) -> list[int]:
+    def get_error(self):
         request = pb2.GetRequest()
         response: pb2.GetErrorResponse = self.stub.GetError(request)
         return response.error_codes
 
-    def get_robot_error_code(self) -> dict[int, ErrorCode]:
+    def get_robot_error_code(self):
         request = pb2.EmptyRequest()
         response: pb2.GetRobotErrorCodeJsonResponse = (
             self.stub.GetRobotErrorCodeJson(request)
@@ -469,12 +469,12 @@ class KachakaApiClientBase:
             title=title,
         )
 
-    def cancel_command(self) -> tuple[pb2.Result, pb2.Command]:
+    def cancel_command(self):
         request = pb2.EmptyRequest()
         response: pb2.CancelCommandResponse = self.stub.CancelCommand(request)
         return (response.result, response.command)
 
-    def get_command_state(self) -> tuple[pb2.CommandState, pb2.Command]:
+    def get_command_state(self):
         request = pb2.GetRequest()
         response: pb2.GetCommandStateResponse = self.stub.GetCommandState(
             request
@@ -488,14 +488,14 @@ class KachakaApiClientBase:
         )
         return response.state == pb2.CommandState.COMMAND_STATE_RUNNING
 
-    def get_running_command(self) -> pb2.Command | None:
+    def get_running_command(self):
         request = pb2.GetRequest()
         response: pb2.GetCommandStateResponse = self.stub.GetCommandState(
             request
         )
         return response.command if response.HasField("command") else None
 
-    def get_last_command_result(self) -> tuple[pb2.Result, pb2.Command]:
+    def get_last_command_result(self):
         request = pb2.GetRequest()
         response: pb2.GetLastCommandResultResponse = (
             self.stub.GetLastCommandResult(request)
@@ -596,7 +596,7 @@ class KachakaApiClientBase:
         )
         return response.id
 
-    def load_map_preview(self, map_id: str) -> tuple[pb2.Result, pb2.Map]:
+    def load_map_preview(self, map_id: str):
         request = pb2.LoadMapPreviewRequest(map_id=map_id)
         response: pb2.LoadMapPreviewResponse = self.stub.LoadMapPreview(request)
         return response.map
@@ -623,7 +623,7 @@ class KachakaApiClientBase:
 
     def import_map(
         self, target_file_path: str, chunk_size: int = 1024 * 1024
-    ) -> tuple[pb2.Result, str]:
+    ):
         def request_iterator() -> Iterator[pb2.ImportMapRequest]:
             with open(target_file_path, mode="rb") as file:
                 while True:
@@ -637,7 +637,7 @@ class KachakaApiClientBase:
         )
         return response.result, response.map_id
 
-    def get_shortcuts(self) -> dict[str, str]:
+    def get_shortcuts(self):
         request = pb2.GetRequest()
         response: pb2.GetShortcutsResponse = self.stub.GetShortcuts(request)
         return {item.id: item.name for item in response.shortcuts}
@@ -654,8 +654,7 @@ class KachakaApiClientBase:
         return response.result
 
     def switch_map(
-        self, map_id: str, *, pose: Pose2d | None = None
-    ) -> pb2.Result:
+        self, map_id: str, *, pose ) -> pb2.Result:
         # If "pose" is not specified, the initial pose is automatically determined to the charger pose.
         initial_pose = (
             pb2.Pose(x=pose.x, y=pose.y, theta=pose.theta) if pose else None

@@ -18,7 +18,7 @@ from typing import (
     Awaitable,
     Callable,
     Generic,
-    ParamSpec,
+    #ParamSpec,
     Protocol,
     TypeVar,
 )
@@ -39,8 +39,8 @@ class HasMetadata(Protocol):
 
 T = TypeVar("T", bound=HasMetadata)
 U = TypeVar("U")
-P = ParamSpec("P")
-CallbackType = Callable[[U], Awaitable[None]] | None
+#P = ParamSpec("P")
+CallbackType = Callable[[U], Awaitable[None]]
 
 
 class ResponseHandler(Generic[T, U]):
@@ -79,10 +79,8 @@ class ResponseHandler(Generic[T, U]):
             yield picked_response
 
 
-class TupleResponseHandler(ResponseHandler[T, U], Generic[T, U, P]):
-    def set_tuple_callback(
-        self, callback: Callable[P, Awaitable[None]] | None
-    ) -> None:
+class TupleResponseHandler():
+    def set_tuple_callback( self, callback ) -> None:
         if callback is None:
             self._callback = None
             return
