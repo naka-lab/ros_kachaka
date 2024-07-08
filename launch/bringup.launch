@@ -1,0 +1,15 @@
+<launch>
+  <param name="robot_description" textfile="$(find ros_kachaka)/urdf/kachaka.urdf" />
+
+  <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster" args="0 0 0 0 0 0 base_footprint base_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="r_wheel_link_broadcaster" args="0 -0.1 0 0 0 0 base_link base_r_drive_wheel_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="l_wheel_link_broadcaster" args="0  0.1 0 0 0 0 base_link base_l_drive_wheel_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="laser_frame_broadcaster" args="0.156 0 0.1049 0 0 0 base_link laser_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="camera_front_link_broadcaster" args="0.21 0 0.070   -1.57 0 -1.57 base_link camera_front_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="camera_back_link" args="-0.14 0 0.070   -1.57 0 1.57 base_link camera_back_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="tof_link_link_broadcaster" args="0.22 0 0.041 -1.57 0 0.78 base_link tof_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="imu_link_broadcaster" args="0.075 -0.0655 0.051 0 0 0 base_link imu_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="docking_link_broadcaster" args="0 0 0.0 0 0 0 base_link docking_link 100" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ros_kachaka)/launch/kachaka.rviz" required="true" />
+</launch>
