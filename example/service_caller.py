@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import rospy
 from ros_msgs.srv import StringTrigger
 import yaml
