@@ -5,6 +5,7 @@ import rospy
 import tf
 import time
 import sys
+import math
 import kachaka_api
 import threading
 from PIL import Image
@@ -109,6 +110,87 @@ def check_types( com, args, types ):
     except:
         return None, f"{com} requires {types} but {args} were given. "
 
+# kachaka apiのこの関数がなぜか動かないので独自実装
+def rotate_in_place( delta_theta ):
+    client.set_manual_control_enabled(True)
+    init_theta = client.get_robot_pose().theta
+
+    delta_theta = normalize_angle(delta_theta)
+
+    while 1:
+        cur_theta = client.get_robot_pose().theta
+        diff_theta = cur_theta-init_theta
+        diff_theta = abs(normalize_angle( diff_theta ))
+
+        rot_speed = np.clip( (abs(delta_theta)-diff_theta)*2 , 0.3, 1.5)
+        if delta_theta<0:
+            rot_speed *=-1
+
+        print(diff_theta, abs(delta_theta)-0.05, rot_speed)
+
+        if diff_theta > abs(delta_theta)-0.1:
+            client.set_robot_velocity(0, 0)
+            print("break")
+            break
+
+        client.set_robot_velocity(0, rot_speed)
+
+    return True
+
+def move_forward( dist ):
+    client.set_manual_control_enabled(True)
+    pose = client.get_robot_pose()
+    init_x = pose.x
+    init_y = pose.y 
+
+
+    while 1:
+        pose = client.get_robot_pose()
+        cur_x = pose.x
+        cur_y = pose.y 
+
+        diff = np.linalg.norm( [init_x-cur_x, init_y-cur_y  ] )
+
+        speed = np.clip( abs(dist-diff), 0.1, 0.3 )
+        if dist<0:
+            speed *= -1
+
+        client.set_robot_velocity(speed, 0 )
+
+        if diff > abs(dist)-0.03:
+            client.set_robot_velocity(0, 0)
+            break
+
+    return True
+
+def normalize_angle( radian ):
+    while 1:
+        if radian > math.pi:
+            radian -= 2 * math.pi
+        elif radian < -math.pi:
+            radian += 2 * math.pi
+        else:
+            break
+
+    return radian
+
+def fine_tune_pose( x, y, theta ):
+    cur_pose = client.get_robot_pose()
+    delta_theta = math.atan2( y-cur_pose.y, x-cur_pose.x ) - cur_pose.theta
+    delta_theta = normalize_angle( delta_theta )
+
+    print("進行方向回転：", delta_theta)
+    rotate_in_place( delta_theta )
+
+    dist = np.linalg.norm( [x-cur_pose.x, y-cur_pose.y] )
+    print("直進：", dist)
+    move_forward( dist )
+
+    delta_theta = theta - client.get_robot_pose().theta
+    delta_theta = normalize_angle( delta_theta )
+    rotate_in_place( delta_theta )
+
+    return True
 
 
 def service_server( req ):
@@ -128,8 +210,10 @@ def service_server( req ):
         "move_to_location": (client.move_to_location, (str,), str),
         "move_to_pose": (client.move_to_pose, (float,float,float), str), 
         "return_shelf": (client.return_shelf, (), str),
-        "rotate_in_place": (client.rotate_in_place, (float,), str),
-        "move_forward": (client.move_forward, (float,), str)
+        "rotate_in_place": (rotate_in_place, (float,), str),
+        "move_forward": (move_forward, (float,), str),
+        "fine_tune_pose": (fine_tune_pose, (float, float, float), str),
+        "dock_shelf": (client.dock_shelf, (), str),
     }
 
     result = False

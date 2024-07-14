@@ -11,7 +11,7 @@ def kachaka_func( com, args=[] ):
     return ret["result"], ret["data"], ret["msg"]
 
 def main():
-    functions = [ "speak", "return_home", "get_locations", "get_robot_pose", "move_shelf", "move_to_location", "move_to_pose", "return_shelf", "rotate_in_place", "move_forward" ]
+    functions = [ "speak", "return_home", "get_locations", "get_robot_pose", "move_shelf", "move_to_location", "move_to_pose", "return_shelf", "rotate_in_place", "move_forward", "fine_tune_pose", "dock_shelf" ]
     functions = sorted(functions)
 
     while 1:
