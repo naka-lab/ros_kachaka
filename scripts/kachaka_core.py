@@ -122,7 +122,7 @@ def rotate_in_place( delta_theta ):
         diff_theta = cur_theta-init_theta
         diff_theta = abs(normalize_angle( diff_theta ))
 
-        rot_speed = np.clip( (abs(delta_theta)-diff_theta)*2 , 0.3, 1.5)
+        rot_speed = np.clip( (abs(delta_theta)-diff_theta) , 0.5, 1.5)
         if delta_theta<0:
             rot_speed *=-1
 
@@ -151,7 +151,7 @@ def move_forward( dist ):
 
         diff = np.linalg.norm( [init_x-cur_x, init_y-cur_y  ] )
 
-        speed = np.clip( abs(dist-diff), 0.1, 0.3 )
+        speed = np.clip( abs(dist-diff), 0.2, 0.5 )
         if dist<0:
             speed *= -1
 
