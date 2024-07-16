@@ -3,8 +3,13 @@
 ```
 cd ~/catkin_ws/src
 git clone https://github.com/naka-lab/ros_kachaka.git
+git clone https://github.com/naka-lab/ros_msgs.git
+cd ~/catkin_ws/
+catkin_make
 pip install protobuf
 pip install grpcio
+sudo apt install ros-noetic-move-base
+
 ```
 
 # 実行
